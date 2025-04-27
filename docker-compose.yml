@@ -1,0 +1,16 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8800:8800"
+    env_file:
+      - backend/.env
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true

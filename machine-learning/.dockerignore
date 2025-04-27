@@ -1,0 +1,40 @@
+# Ignore Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Ignore virtual environments
+venv/
+env/
+.venv/
+
+# Ignore IDE and editor config files
+*.swp
+*.swo
+*.idea/
+.vscode/
+*.DS_Store
+
+# Ignore system-specific files
+Thumbs.db
+
+# Ignore environment variables and credentials
+.env
+.env.local
+.env.*.local
+
+# Ignore dependency caches
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore Docker-related files
+.dockerignore
+Dockerfile
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
+*.whl
