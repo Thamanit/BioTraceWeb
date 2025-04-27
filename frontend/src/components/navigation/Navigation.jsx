@@ -13,7 +13,7 @@ export const Navigation = () => {
             <div className='flex m-1'>
                 <img src={Logo} className='h-full mx-5' alt='Logo' />
                 <h1 className='text-md font-bold m-auto'>
-                    Depaspace
+                    LeuMatchAI
                 </h1>
             </div>
             <div className='flex-grow mx-2 flex gap-2 justify-center'>
