@@ -13,16 +13,16 @@ export const Navigation = () => {
             <div className='flex m-1'>
                 <img src={Logo} className='h-full mx-5' alt='Logo' />
                 <h1 className='text-md font-bold m-auto'>
-                    LeuMatchAI
+                    BioTrace
                 </h1>
             </div>
             <div className='flex-grow mx-2 flex gap-2 justify-center'>
                 <MenuComponent name={'home'} path='/' />
-                {user&&<MenuComponent name={'booking'} path='/bookings' />}
+                {/* {user&&<MenuComponent name={'booking'} path='/bookings' />}
                 {user&&<MenuComponent name={'workspace'} path='/workspaces' />}
                 <MenuComponent name={'companies'} path='/companies' />
-                {hasCompanyOwner && <MenuComponent name={'my company'} path='/mycompany' />}
-                {user?.isAdmin && <MenuComponent name={'admin'} path='/admin' />}
+                {hasCompanyOwner && <MenuComponent name={'my company'} path='/mycompany' />} */}
+                {user?.isAdmin && <MenuComponent name={'Dasboard'} path='/admin' />}
             </div>
             <div className='flex justify-center gap-5 py-1 m-2'>
                 {user?.username}

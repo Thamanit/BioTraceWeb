@@ -27,7 +27,7 @@ const Home = () => {
             <div className='max-h-[200px]'>
             <HomeHeader />
             </div>
-            <div className='flex-grow bg-slate-50 mt-10 rounded-md shadow-inner p-2'>
+            {/* <div className='flex-grow bg-slate-50 mt-10 rounded-md shadow-inner p-2'>
                 <div className='flex justify-between'>
                     <h1 className='tfont-semibold text-black text-md font-bold'>Companies Opening for Job</h1>
                     <SearchComponent search={search} setSearch={setSearch}/>
@@ -37,7 +37,7 @@ const Home = () => {
                         companys.filter(company=>company?.name?.toLowerCase()?.includes(search.toLowerCase())).map(company=><CompanyCard key={company._id} company={company}/>)
                     }
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -15,6 +15,7 @@ import MySpecificCompanyUpdate from './pages/myCompany/MySpecificCompanyUpdate';
 import ManagePositions from './pages/myCompany/MySpecificCompanyPosition';
 import WorkspaceManagement from './pages/workspace/Workspace';
 import BookingCalendar from './pages/booking/BookingCalendar';
+import Results from './Results';
 
 function App() {
   const ProtectedRoute = ({ children }) => {

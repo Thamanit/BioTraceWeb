@@ -8,23 +8,31 @@ const HomeHeader = () => {
     }
     return (
         <div className=''>
-            <h1 className="text-3xl font-bold mb-4 flex gap-2">A <p className='text-yellow-300 text-shadow'>Fabulous Place</p> for Digital Nomad</h1>
+            <h1 className="text-3xl font-bold mb-4 flex gap-2">"Detecting <p className='text-yellow-300 text-shadow'>diabetes</p> right at your fingertips and vision."</h1>
             <p className="mb-4 text-lg">
-                Get a great opportunity for digital nomads to find a places for work
+                Painless. Diabetes Detection with BioTrace
             </p>
-            <button
-                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded mr-2 shadow-lg"
-                onClick={handleGoCompany}
-            >
-                Find a Company
-            </button>
-            OR
+            <Link to="/">
+                <button
+                    className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded mr-2 shadow-lg"
+                    onClick={handleGoCompany}
+                >
+                    Scan Method
+                </button></Link>
             <Link to="/companies/register">
                 <button
                     className="ml-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded shadow-lg"
                 // Todo Add onClick Event
                 >
-                    Register a Company
+                    Upload Image
+                </button>
+            </Link>
+            <Link to="/">
+                <button
+                    className="ml-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded shadow-lg"
+                // Todo Add onClick Event
+                >
+                    View Past Records
                 </button>
             </Link>
         </div>

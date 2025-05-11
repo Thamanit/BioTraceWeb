@@ -43,7 +43,7 @@ const VerifyCompanies = () => {
             <div className="max-h-[200px] text-2xl font-bold">Verify Unverified Companies</div>
             <div className="flex-grow bg-slate-50 mt-10 rounded-md shadow-inner p-6 text-black">
                 {companies.length === 0 ? (
-                    <p>No unverified companies available.</p>
+                    <p>No patients yet.</p>
                 ) : (
                     <table className="w-full border-collapse">
                         <thead>
