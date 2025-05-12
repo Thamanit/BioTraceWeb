@@ -23,7 +23,7 @@ function Results() {
                 <div key={index} className="mb-4 p-4 border rounded bg-white shadow">
                     <p><strong>Image:</strong> {item.filename}</p>
                     <p><strong>Prediction:</strong> {item.prediction}</p>
-                    <p><strong>Confidence:</strong> {item.confidence}</p>
+                    <p><strong>Accuracy:</strong> {item.confidence}</p>
                 </div>
             ))}
         </div>
