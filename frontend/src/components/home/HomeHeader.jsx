@@ -12,7 +12,7 @@ const HomeHeader = () => {
             <p className="mb-4 text-lg">
                 Painless. Diabetes Detection with BioTrace
             </p>
-            <Link to="/companies/register">
+            <Link to="/upload">
                 <button
                     className="ml-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded shadow-lg"
                 // Todo Add onClick Event

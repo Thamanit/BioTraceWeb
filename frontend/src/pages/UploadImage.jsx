@@ -1,61 +1,185 @@
-import React, { useState, useContext } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext';
-import { getApiURL } from '../lib/route';
-
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
+import { getApiURL } from "../lib/route";
+import { useNavigate } from "react-router-dom";
 
 const UploadImage = () => {
-    axios.defaults.withCredentials = true;
+  axios.defaults.withCredentials = true;
 
-    const { user } = useContext(AuthContext);
-    const [imageFile, setImageFile] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    const handleImageChange = (e) => {
-        setImageFile(e.target.files[0]);
-    };
+  // 10 นิ้ว (5 นิ้วข้างขวา + 5 นิ้วข้างซ้าย)
+  const fingerLabels = [
+    "Right Thumb",
+    "Right Index",
+    "Right Middle",
+    "Right Ring",
+    "Right Little",
+    "Left Thumb",
+    "Left Index",
+    "Left Middle",
+    "Left Ring",
+    "Left Little",
+  ];
+  const eyeLabels = ["Left Eye", "Right Eye"];
 
-    const handleUpload = async (e) => {
-        e.preventDefault();
-        if (!imageFile) {
-            toast.error('Please select an image file.');
-            return;
-        }
+  const [fingerFiles, setFingerFiles] = useState({});
+  const [eyeFiles, setEyeFiles] = useState({});
 
-        const formData = new FormData();
-        formData.append('image', imageFile);
-        formData.append('userEmail', user?.email || '');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-        try {
-            setIsUploading(true);
-            await axios.post(`${getApiURL()}/upload`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            toast.success('Image uploaded!');
-            setImageFile(null);
-        } catch {
-            toast.error('Upload failed.');
-        } finally {
-            setIsUploading(false);
-        }
-    };
+  const handleFingerChange = (e, finger) => {
+    const file = e.target.files[0];
+    setFingerFiles((prev) => ({ ...prev, [finger]: file }));
+  };
+
+  const handleEyeChange = (e, eye) => {
+    const file = e.target.files[0];
+    setEyeFiles((prev) => ({ ...prev, [eye]: file }));
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
 
     if (!user) {
-        return <p className="text-red-600">Please log in to upload an image.</p>;
+      toast.error("Please log in to upload images.");
+      return;
     }
 
-    return (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold">Upload Image</h2>
-            <form onSubmit={handleUpload}>
-                <input type="file" accept="image/*" onChange={handleImageChange} />
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded ml-2" disabled={isUploading}>
-                    {isUploading ? 'Uploading...' : 'Upload'}
-                </button>
-            </form>
-        </div>
-    );
+    if (
+      Object.values(fingerFiles).filter(Boolean).length === 0 &&
+      Object.values(eyeFiles).filter(Boolean).length === 0
+    ) {
+      toast.error("Please select at least one image.");
+      return;
+    }
+
+    const formData = new FormData();
+
+    Object.entries(fingerFiles).forEach(([finger, file]) => {
+      if (file) formData.append(`finger_${finger}`, file);
+    });
+
+    Object.entries(eyeFiles).forEach(([eye, file]) => {
+      if (file) formData.append(`eye_${eye}`, file);
+    });
+
+    formData.append("userEmail", user.email || "");
+
+    try {
+      setIsUploading(true);
+      setUploadProgress(0);
+
+      await axios.post(`${getApiURL()}/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(percentCompleted);
+        },
+      });
+
+      toast.success("Images uploaded!");
+      setFingerFiles({});
+      setEyeFiles({});
+      setUploadProgress(0);
+
+      navigate("/results");
+    } catch (error) {
+      console.error(error);
+      toast.error("Upload failed.");
+      setUploadProgress(0);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Upload Fingerprint & Eye Images</h2>
+
+      <form onSubmit={handleUpload} className="space-y-8">
+        {/* กล่องอัปโหลดลายนิ้วมือ 10 นิ้ว */}
+        <section>
+          <h3 className="text-xl font-semibold mb-3">Fingerprint Images</h3>
+          <div className="grid grid-cols-5 gap-4">
+            {fingerLabels.map((finger) => (
+              <div
+                key={finger}
+                className="border p-3 rounded shadow flex flex-col items-center"
+              >
+                <label className="mb-2 font-medium">{finger}</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFingerChange(e, finger)}
+                  disabled={isUploading}
+                />
+                {/* preview รูปภาพอย่างเดียว ไม่แสดงชื่อไฟล์ */}
+                {fingerFiles[finger] && (
+                  <img
+                    src={URL.createObjectURL(fingerFiles[finger])}
+                    alt={finger}
+                    className="mt-2 w-24 h-24 object-cover rounded"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* กล่องอัปโหลดตา */}
+        <section>
+          <h3 className="text-xl font-semibold mb-3">Eye Images</h3>
+          <div className="flex gap-6">
+            {eyeLabels.map((eye) => (
+              <div
+                key={eye}
+                className="border p-3 rounded shadow flex flex-col items-center"
+              >
+                <label className="mb-2 font-medium">{eye}</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleEyeChange(e, eye)}
+                  disabled={isUploading}
+                />
+                {eyeFiles[eye] && (
+                  <img
+                    src={URL.createObjectURL(eyeFiles[eye])}
+                    alt={eye}
+                    className="mt-2 w-32 h-32 object-cover rounded"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {isUploading && (
+          <div className="w-full bg-gray-200 rounded h-4 overflow-hidden mt-4">
+            <div
+              className="bg-blue-600 h-4"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isUploading}
+          className="bg-blue-600 text-white px-5 py-2 rounded disabled:opacity-50"
+        >
+          {isUploading ? `Uploading... (${uploadProgress}%)` : "Upload All"}
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default UploadImage;

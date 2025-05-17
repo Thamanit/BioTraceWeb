@@ -104,7 +104,7 @@ function App() {
             </Route>
             <Route path='/aboutus' element={<div>AboutUs v.3</div>} />
             <Route path='*' element={<h1>Not Found</h1>} />
-            <Route path="/companies/register" element={<UploadImage />} />
+            <Route path="/upload" element={<ProtectedRoute><UploadImage /></ProtectedRoute>} />
             <Route path="/results" element={<Results />} />
 
           </Route>
