@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
@@ -11,7 +11,6 @@ const UploadImage = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // 10 นิ้ว (5 นิ้วข้างขวา + 5 นิ้วข้างซ้าย)
   const fingerLabels = [
     "Right Thumb",
     "Right Index",
@@ -32,14 +31,52 @@ const UploadImage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // refs สำหรับเปิดไฟล์ตอนคลิกกล่อง
+  const fingerInputRefs = useRef({});
+  const eyeInputRefs = useRef({});
+
   const handleFingerChange = (e, finger) => {
     const file = e.target.files[0];
-    setFingerFiles((prev) => ({ ...prev, [finger]: file }));
+    if (file) setFingerFiles((prev) => ({ ...prev, [finger]: file }));
   };
 
   const handleEyeChange = (e, eye) => {
     const file = e.target.files[0];
-    setEyeFiles((prev) => ({ ...prev, [eye]: file }));
+    if (file) setEyeFiles((prev) => ({ ...prev, [eye]: file }));
+  };
+
+  // ฟังก์ชันเปิดกล่องเลือกไฟล์
+  const openFingerFileDialog = (finger) => {
+    if (fingerInputRefs.current[finger]) {
+      fingerInputRefs.current[finger].click();
+    }
+  };
+  const openEyeFileDialog = (eye) => {
+    if (eyeInputRefs.current[eye]) {
+      eyeInputRefs.current[eye].click();
+    }
+  };
+
+  // drag & drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDropFinger = (e, finger) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFingerFiles((prev) => ({ ...prev, [finger]: e.dataTransfer.files[0] }));
+    }
+  };
+
+  const handleDropEye = (e, eye) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setEyeFiles((prev) => ({ ...prev, [eye]: e.dataTransfer.files[0] }));
+    }
   };
 
   const handleUpload = async (e) => {
@@ -104,58 +141,77 @@ const UploadImage = () => {
       <h2 className="text-2xl font-bold mb-6">Upload Fingerprint & Eye Images</h2>
 
       <form onSubmit={handleUpload} className="space-y-8">
-        {/* กล่องอัปโหลดลายนิ้วมือ 10 นิ้ว */}
+        {/* Fingerprint Section */}
         <section>
           <h3 className="text-xl font-semibold mb-3">Fingerprint Images</h3>
           <div className="grid grid-cols-5 gap-4">
             {fingerLabels.map((finger) => (
               <div
                 key={finger}
-                className="border p-3 rounded shadow flex flex-col items-center"
+                className="border p-3 rounded shadow flex flex-col items-center cursor-pointer"
+                onClick={() => openFingerFileDialog(finger)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDropFinger(e, finger)}
               >
-                <label className="mb-2 font-medium">{finger}</label>
                 <input
                   type="file"
                   accept="image/*"
+                  className="hidden"
+                  ref={(el) => (fingerInputRefs.current[finger] = el)}
                   onChange={(e) => handleFingerChange(e, finger)}
                   disabled={isUploading}
                 />
-                {/* preview รูปภาพอย่างเดียว ไม่แสดงชื่อไฟล์ */}
-                {fingerFiles[finger] && (
-                  <img
-                    src={URL.createObjectURL(fingerFiles[finger])}
-                    alt={finger}
-                    className="mt-2 w-24 h-24 object-cover rounded"
-                  />
-                )}
+                <div className="w-24 h-24 border-2 border-dashed border-gray-400 rounded flex items-center justify-center text-gray-400 text-sm select-none">
+                  {fingerFiles[finger] ? (
+                    <img
+                      src={URL.createObjectURL(fingerFiles[finger])}
+                      alt={finger}
+                      className="w-full h-full object-cover rounded"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    "Drop image or click here"
+                  )}
+                </div>
+                <span className="mt-2 font-medium">{finger}</span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* กล่องอัปโหลดตา */}
+        {/* Eye Section */}
         <section>
           <h3 className="text-xl font-semibold mb-3">Eye Images</h3>
           <div className="flex gap-6">
             {eyeLabels.map((eye) => (
               <div
                 key={eye}
-                className="border p-3 rounded shadow flex flex-col items-center"
+                className="border p-3 rounded shadow flex flex-col items-center cursor-pointer"
+                onClick={() => openEyeFileDialog(eye)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDropEye(e, eye)}
               >
-                <label className="mb-2 font-medium">{eye}</label>
                 <input
                   type="file"
                   accept="image/*"
+                  className="hidden"
+                  ref={(el) => (eyeInputRefs.current[eye] = el)}
                   onChange={(e) => handleEyeChange(e, eye)}
                   disabled={isUploading}
                 />
-                {eyeFiles[eye] && (
-                  <img
-                    src={URL.createObjectURL(eyeFiles[eye])}
-                    alt={eye}
-                    className="mt-2 w-32 h-32 object-cover rounded"
-                  />
-                )}
+                <div className="w-32 h-32 border-2 border-dashed border-gray-400 rounded flex items-center justify-center text-gray-400 text-sm select-none">
+                  {eyeFiles[eye] ? (
+                    <img
+                      src={URL.createObjectURL(eyeFiles[eye])}
+                      alt={eye}
+                      className="w-full h-full object-cover rounded"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    "Drop image or click here"
+                  )}
+                </div>
+                <span className="mt-2 font-medium">{eye}</span>
               </div>
             ))}
           </div>
