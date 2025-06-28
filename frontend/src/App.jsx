@@ -8,7 +8,6 @@ import Register from './pages/register/Register';
 import Company from './pages/company/Company';
 import Companies from './pages/company/Companies';
 import CompanyRegister from './pages/company/CompanyRegister';
-import VerifyCompanies from './pages/admin/AdminCompanyVerify';
 import MyCompany from './pages/myCompany/MyCompany';
 import MySpecificCompany from './pages/myCompany/MySpecificCompany';
 import MySpecificCompanyUpdate from './pages/myCompany/MySpecificCompanyUpdate';
@@ -17,6 +16,7 @@ import WorkspaceManagement from './pages/workspace/Workspace';
 import BookingCalendar from './pages/booking/BookingCalendar';
 import UploadImage from './pages/UploadImage';
 import Results from './pages/Results';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -99,8 +99,7 @@ function App() {
               <Route path='company/:id/positions' element={<ManagePositions />} />
             </Route>
             <Route path='/admin' element={<AdminProtectedRoute />}>
-              <Route index element={<>Admin</>} />
-              <Route path='company-verification' element={<VerifyCompanies />} />
+              <Route index element={<AdminDashboard/>} />
             </Route>
             <Route path='/aboutus' element={<div>AboutUs v.3</div>} />
             <Route path='*' element={<h1>Not Found</h1>} />

@@ -97,6 +97,8 @@ const UploadImage = () => {
 
     const formData = new FormData();
 
+    console.log("fingerFiles", fingerFiles);
+
     Object.entries(fingerFiles).forEach(([finger, file]) => {
       if (file) formData.append(`finger_${finger}`, file);
     });
@@ -111,7 +113,7 @@ const UploadImage = () => {
       setIsUploading(true);
       setUploadProgress(0);
 
-      await axios.post(`${getApiURL()}/upload`, formData, {
+      await axios.post(`${getApiURL()}/ml/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round(

@@ -8,6 +8,7 @@
     "setup": "npm install && concurrently \"cd frontend && npm install\" \"cd backend && npm install\""
   },
   "dependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.0.1",
+    "react-webcam": "^7.2.0"
   }
 }

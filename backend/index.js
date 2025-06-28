@@ -11,6 +11,7 @@ import workspaceRoute from './routes/workspaces.js';
 import cors from "cors";
 import bookingsRoute from './routes/bookings.js'
 import chatBotRoute from './routes/chatbot.js'
+import mlRoute from './routes/ml.js';
 
 const app = express();
 dotenv.config();
@@ -33,9 +34,9 @@ mongoose.connection.on("disconnected", () => {
 //middlewares
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
-    credentials: true
-  })
+    origin: (_origin, callback) => callback(null, true), // reflect any origin
+    credentials: true,
+  }),
 );
 app.use(cookieParser())
 app.use(express.json());
@@ -46,7 +47,8 @@ app.use("/api/companyowner", companyOwnerRoute);
 app.use("/api/companyposition", companyPositionRoute);
 app.use("/api/workspaces", workspaceRoute);
 app.use("/api/bookings", bookingsRoute);
-app.use("/api/chatbot",chatBotRoute)
+app.use("/api/chatbot",chatBotRoute);
+app.use("/api/ml",mlRoute);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;

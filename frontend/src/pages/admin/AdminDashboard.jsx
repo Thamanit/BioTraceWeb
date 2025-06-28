@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getApiURL } from '../lib/route';
+import { getApiURL } from '../../lib/route';
 import axios from "axios";
 
-function Results() {
+function AdminDashboard() {
     const [eyeResults, setEyeResults] = useState([]);
     const [fingerprintResults, setFingerprintResults] = useState([]);
 
     const fetchResults = async () => {
         try {
-            const response = await axios.get(getApiURL() + "/ml/results", {
+            const response = await axios.get(getApiURL() + "/ml/results/all", {
                 withCredentials: true, // sends cookies/auth with request
             });
             const data = response.data;
@@ -40,9 +40,11 @@ function Results() {
                 {eyeResults.length > 0 ? (
                     eyeResults.map((item, index) => (
                         <div key={index} className="mb-4 p-4 border rounded bg-white shadow">
+                            <p><strong>User Email:</strong> {item.userEmail}</p>
                             <p><strong>Image:</strong> {item.filename}</p>
                             <p><strong>Prediction:</strong> {item.prediction}</p>
                             <p><strong>Confidence:</strong> {(item.confidence * 100).toFixed(2)}%</p>
+                            <p><strong>Timestamp:</strong> {item.timestamp}</p>
                         </div>
                     ))
                 ) : (
@@ -56,9 +58,11 @@ function Results() {
                 {fingerprintResults.length > 0 ? (
                     fingerprintResults.map((item, index) => (
                         <div key={index} className="mb-4 p-4 border rounded bg-white shadow">
+                            <p><strong>User Email:</strong> {item.userEmail}</p>
                             <p><strong>Image:</strong> {item.filename}</p>
                             <p><strong>Prediction:</strong> {item.predicted_label}</p>
                             <p><strong>Confidence:</strong> {(item.confidence * 100).toFixed(2)}%</p>
+                            <p><strong>Timestamp:</strong> {item.timestamp}</p>
                         </div>
                     ))
                 ) : (
@@ -69,4 +73,4 @@ function Results() {
     );
 }
 
-export default Results;
+export default AdminDashboard;

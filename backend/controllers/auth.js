@@ -39,13 +39,21 @@ export const login = async (req, res, next) => {
     const { password, isAdmin, ...otherDetails } = user._doc;
     res
       .cookie("access_token", token, {
-        httpOnly: true,      // Prevent access to the cookie via JavaScript (XSS protection)
-        secure: true, // Send cookie only over HTTPS in production
-        sameSite: "none", // Enable if the site is accessed via a cross-site request
-        maxAge: 24 * 60 * 60 * 1000, // 1 day (optional)
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
       })
       .status(200)
-      .json({ id: user._id, isAdmin: user.isAdmin, email: user.email, username: user.username });
+      .json({
+        token, // ✅ mobile clients will use this
+        user: {
+          id: user._id,
+          isAdmin: user.isAdmin,
+          email: user.email,
+          username: user.username
+        }
+      });
   } catch (err) {
     next(err);
   }

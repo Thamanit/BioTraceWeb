@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 .env
+*EyeAI.pth
+*FingerAI.h5

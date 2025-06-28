@@ -22,7 +22,7 @@ export const Navigation = () => {
                 {user&&<MenuComponent name={'workspace'} path='/workspaces' />}
                 <MenuComponent name={'companies'} path='/companies' />
                 {hasCompanyOwner && <MenuComponent name={'my company'} path='/mycompany' />} */}
-                {user?.isAdmin && <MenuComponent name={'Dasboard'} path='/admin' />}
+                {user?.isAdmin && <MenuComponent name={'Dashboard'} path='/admin' />}
             </div>
             <div className='flex justify-center gap-5 py-1 m-2'>
                 {user?.username}

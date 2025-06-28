@@ -43,7 +43,7 @@ const Login = () => {
 
     try {
       const res = await axios.post(`${getApiURL()}/auth/login`, credentials, {withCredentials: true});
-      await login(res.data);
+      await login(res.data?.user);
       toast.success("Login successful!");
       navigate("/");
     } catch (err) {

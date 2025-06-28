@@ -20,7 +20,7 @@ const HomeHeader = () => {
                     Upload Image
                 </button>
             </Link>
-            <Link to=""> {/* /results */}
+            <Link to="/results"> {/* /results */}
                 <button
                     className="ml-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded shadow-lg"
                 >
