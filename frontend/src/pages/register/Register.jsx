@@ -68,7 +68,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen from-burning-orange to-orange-800 bg-gradient-to-br">
+    <div className="flex items-center justify-center h-screen bg-[#20916a]">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-center text-gray-700">Create an Account</h2>

@@ -1,3 +1,4 @@
+import datetime
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -11,23 +12,41 @@ import numpy as np
 import requests
 import json
 import tensorflow as tf
+from src.Fingerprint import calculate_diabetes_risk
+from src.Retinal import calculate_diabetes_risk_from_eyes
+from src.SumDiabetes import manual_weighted_risk
+from typing import Optional
 
 app = Flask(__name__)
 CORS(app)
 
 stage_names_eye = [
-    "No DR - Healthy",
-    "Mild DR - Early signs",
-    "Moderate DR - Some vision impact",
-    "Severe DR - High risk of vision loss",
-    "Proliferative DR - Advanced stage, possible blindness"
+    "No DR - Healthy", # index 0 + 1 
+    "Mild DR - Early signs", # index 1 + 1
+    "Moderate DR - Some vision impact", # index 2 + 1
+    "Severe DR - High risk of vision loss", # index 3 + 1
+    "Proliferative DR - Advanced stage, possible blindness" # index 4 + 1
 ]
 
-# stage_names_finger = [
-#     "Arc",    # index 0
-#     "Whorl",  # index 1
-#     "Loop"    # index 2
-# ]
+stage_names_finger = [
+        "A",    # index 0
+        "W",  # index 1
+        "L"    # index 2
+]
+
+fingerLabels = [
+    "Right Thumb",
+    "Right Index",
+    "Right Middle",
+    "Right Ring",
+    "Right Little",
+    "Left Thumb",
+    "Left Index",
+    "Left Middle",
+    "Left Ring",
+    "Left Little",
+]
+eyeLabels = ["Left Eye", "Right Eye"]
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -44,6 +63,7 @@ model_finger = tf.keras.models.load_model("model/FingerAI.h5")
 
 FIREBASE_EYE_URL = "https://biotrace-69031-default-rtdb.asia-southeast1.firebasedatabase.app/eye_results.json"
 FIREBASE_FINGER_URL = "https://biotrace-69031-default-rtdb.asia-southeast1.firebasedatabase.app/fingerprint_results.json"
+FIREBASE_RESULT_URL = "https://biotrace-69031-default-rtdb.asia-southeast1.firebasedatabase.app/results.json"
 
 transform_eye = transforms.Compose([
     transforms.ToTensor(),
@@ -75,7 +95,7 @@ def predict_eye(image_path):
         output = model_eye(tensor)
         pred = torch.argmax(output, 1).item()
         prob = F.softmax(output, dim=1).squeeze().cpu().numpy()
-    stage = stage_names_eye[pred]
+    stage = pred + 1
     confidence = float(prob[pred])
     return stage, confidence
 
@@ -99,11 +119,6 @@ def predict_finger(image_path):
     pred = np.argmax(preds, axis=1)[0]
     confidence = preds[0][pred]
     
-    stage_names_finger = [
-        "Arc",    # index 0
-        "Whorl",  # index 1
-        "Loop"    # index 2
-    ]
     stage = stage_names_finger[pred]
     
     print(f"[DEBUG] Predicted index: {pred}")
@@ -111,15 +126,12 @@ def predict_finger(image_path):
     
     return stage, float(confidence)
 
-
-
-
 def save_and_predict(files, predict_func, firebase_url, userEmail):
     os.makedirs('uploads', exist_ok=True)
     results = []
 
     for file in files:
-        filename = file.filename
+        filename = file.filename.split('_')[1]
         save_path = os.path.join('uploads', filename)
         file.save(save_path)
 
@@ -136,29 +148,21 @@ def save_and_predict(files, predict_func, firebase_url, userEmail):
         result = {
             "filename": filename,
             "prediction": stage,
-            "confidence": confidence,
+            "confidence": confidence, #%confidenceจากaccuracy ai
             "userEmail": userEmail,
-            "timestamp": time.strftime("%Y-%m-%d %H:%M")
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Accurate to milliseconds
         }
 
         # เปลี่ยน key สำหรับ fingerprint ให้ตรงกับ React
         if 'fingerprint' in firebase_url:
             result["predicted_label"] = result.pop("prediction")
 
-        # ส่งผลลัพธ์ไป Firebase
-        try:
-            response = requests.post(firebase_url, data=json.dumps(result))
-            if response.status_code != 200:
-                print(f"[WARN] Firebase POST failed for {filename}: Status {response.status_code}")
-        except Exception as e:
-            print(f"[ERROR] Firebase error for {filename}: {e}")
-
         results.append({
             "filename": filename,
             "prediction": stage,
             "confidence": round(confidence * 100, 2),
             "userEmail": userEmail,
-            "timestamp": time.strftime("%Y-%m-%d %H:%M")
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Accurate to milliseconds
         })
 
         os.remove(save_path)
@@ -193,6 +197,112 @@ def upload_finger():
     if isinstance(results, tuple):
         return jsonify(results[0]), results[1]
     return jsonify({"results": results})
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    if 'eye' not in request.files and 'finger' not in request.files:
+        return jsonify({'error': 'No image files provided for either eye or finger'}), 400
+
+    user_email = request.form.get('userEmail')
+    gender = request.form.get('gender')
+    age = 0
+    try:
+        age = int(request.form.get('age', 0))
+    except ValueError:
+        return jsonify({'error': 'Invalid age provided'}), 400
+
+    results_eye = []
+    results_finger = []
+
+    # Process eye images
+    if 'eye' in request.files:
+        eye_images = request.files.getlist('eye')
+        if len(eye_images) > 0:
+            print(f"[INFO] Eye images received: {[f.filename for f in eye_images]}")
+            eye_results = save_and_predict(eye_images, predict_eye, FIREBASE_EYE_URL, user_email)
+            # error handling for eye results
+            if isinstance(eye_results, tuple):
+                return jsonify(eye_results[0]), eye_results[1]
+            results_eye = eye_results
+
+    # Process finger images
+    if 'finger' in request.files:
+        finger_images = request.files.getlist('finger')
+        if len(finger_images) > 0:
+            print(f"[INFO] Finger images received: {[f.filename for f in finger_images]}")
+            finger_results = save_and_predict(finger_images, predict_finger, FIREBASE_FINGER_URL, user_email)
+            # error handling for finger results
+            if isinstance(finger_results, tuple):
+                return jsonify(finger_results[0]), finger_results[1]
+            results_finger= finger_results
+    
+    # age = 66
+    # gender = 'หญิง'  # หรือ 'ชาย'
+
+    eye_risk = 0
+    finger_risk = 0
+
+    print(f"[INFO] Eye results: {results_eye}")
+    print(f"[INFO] Finger results: {results_finger}")
+
+    eye_left: Optional[dict] = next((r for r in results_eye if r["filename"] == eyeLabels[0]), None)
+    eye_right: Optional[dict] = next((r for r in results_eye if r["filename"] == eyeLabels[1]), None)
+    if eye_left and eye_right:
+        print(f"[INFO] Left Eye Prediction: {eye_left['prediction']}, Right Eye Prediction: {eye_right['prediction']}")
+        eye_risk = calculate_diabetes_risk_from_eyes(eye_left['prediction'], eye_right['prediction'], age, gender)
+    
+    finger_left_thumb: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[0]), None)
+    finger_left_index: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[1]), None)
+    finger_left_middle: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[2]), None)
+    finger_left_ring: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[3]), None)
+    finger_left_little: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[4]), None)
+    finger_right_thumb: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[5]), None)
+    finger_right_index: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[6]), None)
+    finger_right_middle: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[7]), None)
+    finger_right_ring: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[8]), None)
+    finger_right_little: Optional[dict] = next((r for r in results_finger if r["filename"] == fingerLabels[9]), None)
+
+    if (finger_left_thumb and finger_left_index and finger_left_middle and 
+        finger_left_ring and finger_left_little and finger_right_thumb and 
+        finger_right_index and finger_right_middle and finger_right_ring and 
+        finger_right_little):
+
+        fingers_input = {
+            'R1': finger_right_thumb['prediction'],
+            'R2': finger_right_index['prediction'],
+            'R3': finger_right_middle['prediction'],
+            'R4': finger_right_ring['prediction'],
+            'R5': finger_right_little['prediction'],
+            'L1': finger_left_thumb['prediction'],
+            'L2': finger_left_index['prediction'],
+            'L3': finger_left_middle['prediction'],
+            'L4': finger_left_ring['prediction'],
+            'L5': finger_left_little['prediction']
+        }
+        finger_risk = calculate_diabetes_risk(
+            fingers_input, gender, age
+        )
+    
+    # Combine results
+    result_risk = manual_weighted_risk(eye_risk, finger_risk)
+
+    result = {
+        "prediction": result_risk['total_risk'],
+        "level": result_risk['level'],
+        "description": result_risk['description'],
+        "userEmail": user_email,
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Accurate to milliseconds
+    }
+
+    # ส่งผลลัพธ์ไป Firebase
+    try:
+        response = requests.post(FIREBASE_RESULT_URL, data=json.dumps(result))
+    except Exception as e:
+        print(f"[ERROR] Firebase error")
+
+    return jsonify({"results": {
+        "result": result
+    }})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

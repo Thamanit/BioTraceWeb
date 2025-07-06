@@ -31,7 +31,8 @@ const Layout = () => {
         <div className="bg-white w-screen h-screen flex flex-col overflow-auto relative">
             {user && <ChatbotComponent/>}
             {/* Fixed Orange background */}
-            <div className="from-burning-orange to-orange-700 bg-gradient-to-br fixed top-0 w-screen h-[400px] opacity-90 z-0"></div>
+            <div className="bg-[#20916a] fixed top-0 w-screen h-[400px] z-0"></div>
+
 
 
             {/* Fixed Navigation bar */}

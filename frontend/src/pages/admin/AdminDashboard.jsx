@@ -3,8 +3,7 @@ import { getApiURL } from '../../lib/route';
 import axios from "axios";
 
 function AdminDashboard() {
-    const [eyeResults, setEyeResults] = useState([]);
-    const [fingerprintResults, setFingerprintResults] = useState([]);
+    const [results, setResults] = useState([]);
 
     const fetchResults = async () => {
         try {
@@ -12,8 +11,7 @@ function AdminDashboard() {
                 withCredentials: true, // sends cookies/auth with request
             });
             const data = response.data;
-            setEyeResults(data.eyes);
-            setFingerprintResults(data.fingers);
+            setResults(data.results);
         } catch (error) {
             console.error("Error fetching eye results:", error);
         }
@@ -34,39 +32,20 @@ function AdminDashboard() {
 
     return (
         <div className="p-6 space-y-10">
-            {/* ผลลัพธ์การตรวจสอบตา */}
             <section>
-                <h2 className="text-2xl font-bold mb-4 text-blue-600">🩺 Eye Detection Results</h2>
-                {eyeResults.length > 0 ? (
-                    eyeResults.map((item, index) => (
+                <h2 className="text-2xl font-bold mb-4 text-blue-600">🩺 Diabetes Detection Results</h2>
+                {results.length > 0 ? (
+                    results.map((item, index) => (
                         <div key={index} className="mb-4 p-4 border rounded bg-white shadow">
-                            <p><strong>User Email:</strong> {item.userEmail}</p>
-                            <p><strong>Image:</strong> {item.filename}</p>
-                            <p><strong>Prediction:</strong> {item.prediction}</p>
-                            <p><strong>Confidence:</strong> {(item.confidence * 100).toFixed(2)}%</p>
-                            <p><strong>Timestamp:</strong> {item.timestamp}</p>
+                            <p><strong>User Email:</strong> {item?.userEmail}</p>
+                            <p><strong>Diabetes Prediction:</strong> {item?.prediction + "%"}</p>
+                            <p><strong>Level :</strong> {item?.level}</p>
+                            <p><strong>Description :</strong> {item?.description}</p>
+                            <p><strong>Timestamp:</strong> {new Date(item?.timestamp).toLocaleString()}</p>
                         </div>
                     ))
                 ) : (
                     <p>No eye results available.</p>
-                )}
-            </section>
-
-            {/* ผลลัพธ์การตรวจสอบลายนิ้วมือ */}
-            <section>
-                <h2 className="text-2xl font-bold mb-4 text-green-600">🧬 Fingerprint Detection Results</h2>
-                {fingerprintResults.length > 0 ? (
-                    fingerprintResults.map((item, index) => (
-                        <div key={index} className="mb-4 p-4 border rounded bg-white shadow">
-                            <p><strong>User Email:</strong> {item.userEmail}</p>
-                            <p><strong>Image:</strong> {item.filename}</p>
-                            <p><strong>Prediction:</strong> {item.predicted_label}</p>
-                            <p><strong>Confidence:</strong> {(item.confidence * 100).toFixed(2)}%</p>
-                            <p><strong>Timestamp:</strong> {item.timestamp}</p>
-                        </div>
-                    ))
-                ) : (
-                    <p>No fingerprint results available.</p>
                 )}
             </section>
         </div>

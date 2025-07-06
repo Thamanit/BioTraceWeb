@@ -112,14 +112,14 @@ const ChatbotComponent = () => {
                 </div>
             )}
 
-            {!open && (
+            {/* {!open && (
                 <button
                     onClick={toggleOpen}
                     className="bg-orange-500 text-white p-4 rounded-full shadow-md hover:bg-orange-600 transition-all duration-300"
                 >
                     <MessageCircle className="w-6 h-6" />
                 </button>
-            )}
+            )} */}
         </div>
     );
 };
