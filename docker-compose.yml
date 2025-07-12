@@ -22,6 +22,8 @@ services:
       - backend-python/.env
     ports:
       - "5000:5000"
+    volumes:
+      - ./backend-python/model:/app/model
 
   nginx-proxy-manager:
     image: jc21/nginx-proxy-manager:latest
