@@ -1,0 +1,16 @@
+__pycache__/
+uploads/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.log
+*.h5
+*.pth
+*.pt
+*.onnx
+*.zip
+*.tar.gz
+.env
+*.whl
+.venv/
