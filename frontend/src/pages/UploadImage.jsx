@@ -182,7 +182,6 @@ const UploadImage = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  capture="environment"
                   className="hidden"
                   ref={(el) => (fingerInputRefs.current[finger] = el)}
                   onChange={(e) => handleFingerChange(e, finger)}
@@ -221,7 +220,6 @@ const UploadImage = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  capture="environment"
                   className="hidden"
                   ref={(el) => (eyeInputRefs.current[eye] = el)}
                   onChange={(e) => handleEyeChange(e, eye)}
