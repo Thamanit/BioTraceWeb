@@ -17,6 +17,7 @@ from src.Retinal import calculate_diabetes_risk_from_eyes
 from src.SumDiabetes import manual_weighted_risk
 from typing import Optional
 from dotenv import load_dotenv
+from zoneinfo import ZoneInfo
 load_dotenv()
 
 app = Flask(__name__)
@@ -152,7 +153,7 @@ def save_and_predict(files, predict_func, firebase_url, userEmail):
             "prediction": stage,
             "confidence": confidence, #%confidenceจากaccuracy ai
             "userEmail": userEmail,
-            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Accurate to milliseconds
+            "timestamp": datetime.datetime.now(ZoneInfo("Asia/Bangkok")).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         }
 
         # เปลี่ยน key สำหรับ fingerprint ให้ตรงกับ React
@@ -164,7 +165,7 @@ def save_and_predict(files, predict_func, firebase_url, userEmail):
             "prediction": stage,
             "confidence": round(confidence * 100, 2),
             "userEmail": userEmail,
-            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Accurate to milliseconds
+            "timestamp": datetime.datetime.now(ZoneInfo("Asia/Bangkok")).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         })
 
         os.remove(save_path)
@@ -293,7 +294,7 @@ def upload():
         "level": result_risk['level'],
         "description": result_risk['description'],
         "userEmail": user_email,
-        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Accurate to milliseconds
+        "timestamp": datetime.datetime.now(ZoneInfo("Asia/Bangkok")).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     }
 
     # ส่งผลลัพธ์ไป Firebase
