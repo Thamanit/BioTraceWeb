@@ -42,12 +42,12 @@ def calculate_diabetes_risk(fingers, gender, age):
     
     return total_risk
 
-# ✅ ตัวอย่างการใช้งาน
-fingers_input = {
-    'R1': 'W', 'R2': 'A', 'R3': 'W', 'R4': 'W', 'R5': 'W',
-    'L1': 'W', 'L2': 'W', 'L3': 'A', 'L4': 'W', 'L5': 'A'
-}
-gender_input = 'F'
-age_input = 65
+# # ✅ ตัวอย่างการใช้งาน
+# fingers_input = {
+#     'R1': 'W', 'R2': 'A', 'R3': 'W', 'R4': 'W', 'R5': 'W',
+#     'L1': 'W', 'L2': 'W', 'L3': 'A', 'L4': 'W', 'L5': 'A'
+# }
+# gender_input = 'F'
+# age_input = 65
 
-calculate_diabetes_risk(fingers_input, gender_input, age_input)
+# calculate_diabetes_risk(fingers_input, gender_input, age_input)

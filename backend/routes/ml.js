@@ -39,11 +39,11 @@ router.post('/upload', upload.any(), async (req, res) => {
     console.log('Files received:', req.files.map(f => f));
 
     // แยกไฟล์ตาม prefix "eye_" และ "finger_"
-    const eyeFiles = req.files.filter(f => f.originalname.toLowerCase().startsWith('eye_'));
-    const fingerFiles = req.files.filter(f => f.originalname.toLowerCase().startsWith('finger_'));
+    const eyeFiles = req.files.filter(f => f.fieldname.toLowerCase().startsWith('eye_'));
+    const fingerFiles = req.files.filter(f => f.fieldname.toLowerCase().startsWith('finger_'));
 
-    console.log('Eye files:', eyeFiles.map(f => f.originalname));
-    console.log('Finger files:', fingerFiles.map(f => f.originalname));
+    console.log('Eye files:', eyeFiles.map(f => f.fieldname));
+    console.log('Finger files:', fingerFiles.map(f => f.fieldname));
 
     //validate file label from eye and finger
     const validateFiles = (files, labels) => {
@@ -77,7 +77,7 @@ router.post('/upload', upload.any(), async (req, res) => {
         formData.append('finger', fs.createReadStream(file.path), file.fieldname);
       });
 
-      const pythonApiUrl = `http://localhost:5000/${endpoint}`;
+      const pythonApiUrl = `${process.env.PYTHON_URL}/${endpoint}`;
       const response = await axios.post(pythonApiUrl, formData, {
         headers: formData.getHeaders(),
         maxContentLength: Infinity,

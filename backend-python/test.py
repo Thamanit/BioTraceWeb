@@ -1,13 +1,14 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import os
-import cv2
-import torch
-import torch.nn.functional as F
-import torchvision.transforms as transforms
 from efficientnet_pytorch import EfficientNet
-import numpy as np
-import requests
-import json
-import tensorflow as tf
-print("[DEBUG] Model path:", os.path.abspath("model/EyeAI.pth"))
+import torch
+
+# Load model from correct EfficientNet variant
+model = EfficientNet.from_name('efficientnet-b4')  # ← change this to match
+
+# If your model was fine-tuned for 5 classes, update the classifier
+model._fc = torch.nn.Linear(in_features=1792, out_features=5)
+
+# Load weights
+state_dict = torch.load("model/EyeAI.pth", map_location=torch.device("cpu"))
+model.load_state_dict(state_dict)
+
+print("✅ Loaded EfficientNet-B4 model with 5 output classes.")

@@ -16,6 +16,8 @@ from src.Fingerprint import calculate_diabetes_risk
 from src.Retinal import calculate_diabetes_risk_from_eyes
 from src.SumDiabetes import manual_weighted_risk
 from typing import Optional
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -51,9 +53,9 @@ eyeLabels = ["Left Eye", "Right Eye"]
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load PyTorch model for eye
-model_eye = EfficientNet.from_name('efficientnet-b6')
-model_eye._fc = torch.nn.Linear(model_eye._fc.in_features, 5)
+# ✅ Correct variant: EfficientNet-B4
+model_eye = EfficientNet.from_name('efficientnet-b4')
+model_eye._fc = torch.nn.Linear(model_eye._fc.in_features, 5)  # 5 classes
 model_eye.load_state_dict(torch.load("model/EyeAI.pth", map_location=device))
 model_eye.to(device)
 model_eye.eval()
@@ -61,9 +63,9 @@ model_eye.eval()
 # Load TensorFlow model for finger
 model_finger = tf.keras.models.load_model("model/FingerAI.h5")
 
-FIREBASE_EYE_URL = "https://biotrace-69031-default-rtdb.asia-southeast1.firebasedatabase.app/eye_results.json"
-FIREBASE_FINGER_URL = "https://biotrace-69031-default-rtdb.asia-southeast1.firebasedatabase.app/fingerprint_results.json"
-FIREBASE_RESULT_URL = "https://biotrace-69031-default-rtdb.asia-southeast1.firebasedatabase.app/results.json"
+FIREBASE_EYE_URL = os.environ.get("FIREBASE_URL") + "eye_results.json"
+FIREBASE_FINGER_URL = os.environ.get("FIREBASE_URL") + "fingerprint_results.json"
+FIREBASE_RESULT_URL = os.environ.get("FIREBASE_URL") + "results.json"
 
 transform_eye = transforms.Compose([
     transforms.ToTensor(),

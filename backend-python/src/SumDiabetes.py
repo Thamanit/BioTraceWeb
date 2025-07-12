@@ -57,19 +57,19 @@ def manual_weighted_risk(retina_risk=None, fingerprint_risk=None, retina_weight=
 
 # 🔍 ทดสอบทั้ง 3 เงื่อนไข
 
-# เงื่อนไขที่ 1: มีทั้ง Retina และ Fingerprint
-print("▶️ เงื่อนไขที่ 1: ทั้ง Retina และ Fingerprint")
-result1 = manual_weighted_risk(retina_risk=60, fingerprint_risk=30)
-for k, v in result1.items(): print(f"{k}: {v}")
-print()
+# # เงื่อนไขที่ 1: มีทั้ง Retina และ Fingerprint
+# print("▶️ เงื่อนไขที่ 1: ทั้ง Retina และ Fingerprint")
+# result1 = manual_weighted_risk(retina_risk=60, fingerprint_risk=30)
+# for k, v in result1.items(): print(f"{k}: {v}")
+# print()
 
-# เงื่อนไขที่ 2: มีเฉพาะ Fingerprint
-print("▶️ เงื่อนไขที่ 2: มีเฉพาะ Fingerprint")
-result2 = manual_weighted_risk(retina_risk=None, fingerprint_risk=30)
-for k, v in result2.items(): print(f"{k}: {v}")
-print()
+# # เงื่อนไขที่ 2: มีเฉพาะ Fingerprint
+# print("▶️ เงื่อนไขที่ 2: มีเฉพาะ Fingerprint")
+# result2 = manual_weighted_risk(retina_risk=None, fingerprint_risk=30)
+# for k, v in result2.items(): print(f"{k}: {v}")
+# print()
 
-# เงื่อนไขที่ 3: มีเฉพาะ Retina
-print("▶️ เงื่อนไขที่ 3: มีเฉพาะ Retina")
-result3 = manual_weighted_risk(retina_risk=60, fingerprint_risk=None)
-for k, v in result3.items(): print(f"{k}: {v}")
+# # เงื่อนไขที่ 3: มีเฉพาะ Retina
+# print("▶️ เงื่อนไขที่ 3: มีเฉพาะ Retina")
+# result3 = manual_weighted_risk(retina_risk=60, fingerprint_risk=None)
+# for k, v in result3.items(): print(f"{k}: {v}")

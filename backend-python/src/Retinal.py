@@ -33,18 +33,18 @@ def calculate_diabetes_risk_from_eyes(dr_stage_R1, dr_stageL1, age, gender):
         total_risk = adjust_risk_by_age_and_gender(avg_risk, age, gender)
         return total_risk
 
-# 🔻 ใส่ค่าที่นี่
-dr_stage_input_R1 = 4
-dr_stage_input_L1 = 3
-age = 66
-gender = 'หญิง'  # หรือ 'ชาย'
+# # 🔻 ใส่ค่าที่นี่
+# dr_stage_input_R1 = 4
+# dr_stage_input_L1 = 3
+# age = 66
+# gender = 'หญิง'  # หรือ 'ชาย'
 
-# ✅ คำนวณ
-risk_R1 = calculate_diabetes_risk_from_DR_stage(dr_stage_input_R1)
-risk_L1 = calculate_diabetes_risk_from_DR_stage(dr_stage_input_L1)
+# # ✅ คำนวณ
+# risk_R1 = calculate_diabetes_risk_from_DR_stage(dr_stage_input_R1)
+# risk_L1 = calculate_diabetes_risk_from_DR_stage(dr_stage_input_L1)
 
-if risk_R1 is not None and risk_L1 is not None:
-    avg_risk = (risk_R1 + risk_L1) / 2
-    total_risk = adjust_risk_by_age_and_gender(avg_risk, age, gender)
-    print(f"ความเสี่ยงเบาหวานชนิดที่ 2 จาก DR ทั้งสองข้าง: {avg_risk:.1f}%")
-    print(f"รวมกับความเสี่ยงจากอายุและเพศ → ความเสี่ยงรวม: {total_risk:.1f}%")
+# if risk_R1 is not None and risk_L1 is not None:
+#     avg_risk = (risk_R1 + risk_L1) / 2
+#     total_risk = adjust_risk_by_age_and_gender(avg_risk, age, gender)
+#     print(f"ความเสี่ยงเบาหวานชนิดที่ 2 จาก DR ทั้งสองข้าง: {avg_risk:.1f}%")
+#     print(f"รวมกับความเสี่ยงจากอายุและเพศ → ความเสี่ยงรวม: {total_risk:.1f}%")

@@ -61,6 +61,7 @@ export const AuthContextProvider = ({ children }) => {
       setUser(null);
       setError(null);
       setHasCompanyOwner(false);
+      setLoading(false);
     } catch (error) {
       console.error("Logout failed", error);
     }

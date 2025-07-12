@@ -13,8 +13,18 @@ export const register = async (req, res, next) => {
       password: hash,
     });
 
-    await newUser.save();
-    res.status(200).send("User has been created.");
+    const savedUser = await newUser.save();
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully.",
+      user: {
+        id: savedUser._id,
+        username: savedUser.username,
+        email: savedUser.email,
+        isAdmin: savedUser.isAdmin,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -62,7 +72,10 @@ export const login = async (req, res, next) => {
 export const logout = async (req, res, next) => {
   try {
     res.clearCookie("access_token");
-    res.status(200).send("Logged out.");
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully."
+    });
   } catch (err) {
     next(err);
   }

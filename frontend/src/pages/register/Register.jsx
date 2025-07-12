@@ -56,8 +56,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post(getApiURL()+"/auth/register", userInfo);
-      login(res.data.details);
+      await axios.post(getApiURL()+"/auth/register", userInfo);
       toast.success("Registration successful! Redirecting to login...");
       navigate("/login");
     } catch (err) {
